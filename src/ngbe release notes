@@ -1,0 +1,253 @@
+ngbe-1.2.5.1(release time: 2023/09/19)
+- fix bug ethtool -C ethName adaptive-rx on/off adaptive-tx on/off.
+
+ngbe-1.2.5(release time: 2023/07/11)
+- fix bug in ECC error recovery flow. Change the device reset waiting time from 3s to 1s
+- fix bug when the flash cannot be accessed, getting lldp status from flash would take too long time at driver loading time. 
+  It will cause cpu stucked.
+- fix bug when pf link is down, vf cannot detect the link change.
+- fix bug that makes ethtool show advertised speed abnormal in autoneg off case.
+- fix bug: the number of descriptors in tx/rx queue must be multiple of 128.
+- To avoid the speed of internal phy from 1000M down to 100M/10M when signal is not good, set "disable fall 100M" bit of gphy reg.
+- To avoid the speed of internal phy from 1000M down to 100M/10M when signal is not good, driver will retry auto-negotiation for 3 times 
+  if gphy does not link to 1000m. This action can be switch on/off by macro and is off by default.
+- Make "Disable completion timeout" macro on by default.
+- change yt8521/8531 BMCR from 0x8240 t0 0x8140 in 1G autoneg off case. 
+- do not do pcie hot reset when pcie error found if sriov is enabled.
+- Add ngbe genphy_suspend and genphy_resume ops. Change flow of gphy initialization, only setup phy power in ngbe_probe
+->ngbe_phy_init. When ngbe_open/close, just to phy_suspend and phy_resume.
+- optimize the driver code.
+- add support for KylinV10 Desktop 
+- add support for suse15sp5, suse15.5
+- add support for redhat9.2, redhat 8.8
+- add support for fedora38
+- add support for uos server 1060a,1060e
+- new feature: add XDP support:
+  - Xdp programs can be loaded in native mode
+  - Supports XDP_PASS, XDP_DROP, XDP_ABORTED, XDP_TX, XDP_REDIRECT xdp action
+  - Supports load AF_XDP in copy-mode
+  - Supports AF_XDP loaded on a specified queue
+
+known unresolved issues:
+1. UOS 1050a, log "RXDCTL.ENABLE on Rx queue 0 not cleared within the polling period" happens probabilistically. [EMERALDSW-265]
+2. VF can not obtain mailbox lock when PF does down/up. [EMERALDSW-266]
+3. The statistics of queues 4 to 7 are lost after xdp program is loaded. [EMERALDSW-267]
+
+ngbe-1.2.4(release time: 2023/03/01)
+- fix bug on concurrent accessing to yutai phy registers. Add spinlock for protection.
+- fix bug that when double vlan hw offload is on, iperf cannot send/recevie packets successfully.
+- fix bug that when enable sriov mode with 7 vfs, an error "free already-free IRQ" would be promoted by os.
+- fix bug that the max number of RSS queue pairs exceeded the number of cpu cores.
+- fix bug that executing "make modules_install" does not depmod in some kinds of linux os.
+- fix bug on statistical count of "rx_missed_errors".
+- fix bug that vf works abnormal in promisc mode.
+- fix bug that if mac address is changed by host,default mac address cannot be restored after driver reload when hw veto bit is set.
+- Do sw reset instead of pcie recovery flow when hw ecc error reported.
+- regroup pcie aer status register print information. 
+- regroup NGBE_FLAG2_PCIE_NEED_RECOVER macro. remove unused NGBE_PCIE_RECOVER macro
+- add ncsi support on yutai phy.
+- add auto-negotiation on/off switch for yutai phy in 001 mode.
+- add PCIe registers print infomation for debugging when detecting pcie pending bit not clear issue.
+- add lan reset in tx timeout / clean tx irq flow
+- add "enable/disable lldp offload in fw" by using ethtool
+- add support for KylinV10_x86_testv3, KylinV10 sp1 and sp2
+- add support for ubuntu14.04
+- add support for redhat8.7 and 9.1
+- add support for sles12.3, 15.4 and 12
+
+ngbe-1.2.3(release time: 2022/08/16)
+- remove zte phy related code.
+- fix bug of identifing the real phy mode when in marvell phy mix mode.
+- fix bug that speed change would lead to link down in marvell phy copper mode.
+- add support for marvell/yt8521 1000base-x mode autoneg on/off switch by ethtool
+- turn off fiber auto sensing and set 1000BX manually to avoid link to 100M occationally in yt8521/8531 fiber mode
+- add support for yt8521/8531 "sgmii mac-to-rgmii phy" mode
+- add spinlock protection on yt8521/8531 phy ext field registers accessing
+- add pcie aer configuration space print info before pcie recovery
+- add marcro switches NGBE_RECOVER_CHECK and NGBE_DIS_COMP_TIMEOUT in configure file
+- correct the link mode showing by "ethtool dev" when phy is in fiber mode 
+- add support for x86 centos8.6 and centos 9.0
+- add support for linux kernel 5.18.1
+- add support for openEuler 22.03 and uos ulec20
+- add support for openEuler 4.19.208  
+- change the compile parameter
+- fix bug that lan0 would ocassionally fail to initialize when insmod driver imediately after rmmod driver
+- add support for updating initramfs in Makefile
+- when using "ethtool -f" to upgrade flash image, the operation can only be made once before reboot the machine. 
+- add chip version(A/B) check when using "ethtool -f" 
+
+known unresolved issues:
+1. double vlan and QinQ can cause call trace and do pcie recovery
+2. On loongson platform, mac_ctl packets can cause call trace
+3. Sometimes, 'ethtool -s ethx autoneg on' is not valid on yt8521 phy
+
+ngbe-1.2.2(release time: 2022/04/12)
+- fix bug of pcie recovery flow. 
+  Also add pcie recovery switch in configure file to turn on/off this function
+- fix bug that phy speed auto-negotiation will occasionally set speed to 100M while 
+  1000M is what we really want
+- add speed auto-negotiation retry for internel phy 
+  if the speed is linked to 100M while 1000M is what we really want.
+  Also, add speed auto-negotiation retry switch to turn on/off this function
+- add support for yt8531 phy
+- add support for yt8521/8531 SGMAC_TO_RGPHY(3'b101) mode
+- add support for customerize oem ssid and svid.
+- add support for suse15sp3, suse12sp5, suse11.3 
+- add support for ubuntu21.10
+- add support for arm/x86 centos8.5
+- add support for centos7.3-7.6
+
+ngbe-1.2.1(release time: 2021/12/20)
+- add support for ssid xx62 and xx64 for yt_phy_sfp which can control the tx laser of sfp module by gpio
+- fix compile warnning
+- fix bug of 'ethtool -p' for yt8521 phy with some old kernel
+
+ngbe-1.2.0(release time: 2021/11/29)
+- fix bug of sending udp packet out-of-order
+- fix compiling error on kernel-realtime os 
+- fix compiling error when DISABLE_PACKET_SPLIT macro is switched on.
+- fix efuse configuration bug.4
+- fix bug of showing correct suppported link speed when executing "ethtool ethName" 
+- fix compiling error on centos4.18.0 rt7
+- add support for "internal phy-to-yt8521" mode
+- add support for "rgmii mac to FPGA" mode
+- add support for yt8521 "rgmii mac to sgmii phy" mode
+- add support for setting force speed to 1000M/100M/10M when yt8521 is in utp mode
+  with ethtool command.
+- add support for led and polarity configuration in firmware.
+  supported phy type:
+  -internal phy
+  -marvell88E1512
+  -yt8521
+- add marvell88E1512 phy power on/off action when making lan port up/down.
+- add support for selectable fiber/rj45 mode of marvell 88e1512 for each lan port on one chip
+- add support for "ethtool -p" with marvell 88e1512 phy.
+- fix bug of tunnel mode traffic such as vxlan
+
+Note:
+current version supports "ethtool -p" function. However, it has some restrictions.
+1. For yt8521 phy, "ethtool -p" would make led2 blink. If you do not use led2, this 
+command has no effect.
+
+
+ngbe-1.1.1(release time: 2021/11/29)
+- add phy force-speed mode to autoneg off cmd
+- add ethtool -p for yt8521 phy
+- add yt8521 link status polling mode
+- diff yt8521 utp and fiber mode in "ethtool name" command 
+- add itr setting configuration in configure file
+- fix compling bugs in kernel 5.10 and centos 8.4
+- fix sriov issue to make sure sriov cannot be disabled when vfs are assigned.
+
+ngbe-1.1.0(release time: 2021/05/21)
+- fix polling bond mode speed 100 not link up
+- fix tx pending bit when fw is 10008/10009
+- fix ethtool -a xxx autoneg on failed
+- fix when hy guest os is windows bar4 will be clean 
+
+
+
+ngbe-1.0.9(release time: 2021/04/20)
+- ethtool -t xxx 
+- add mbox check
+- fix ngbevf autoload error 
+- update to support kernel 5.8.9
+- compile in centos 8.3
+- fix phy signal set bug
+- uprade img function
+
+
+
+ngbe-1.0.8(release time: 2021/01/22)
+- support pcie error recovery 
+- add sub device id 0x0103
+- add poll link status method to accelerate bond switch speed.
+- add support for "ethtool -k rxhash off/on"
+- fix compile error on uos ft platform.
+- fix "ethtool -p xxx" function bug
+- add switch control for yutai phy power.
+- fix multicast packet bug 
+
+issues exist in current version:
+- iperf udp/tcp traffic has problem in double vlan mode. 
+
+
+
+Driver version: 1.0.0(beta)
+
+Supported OS: CentOS 7.2 to 7.4 and kylinft
+
+=================================================================================
+
+Contents
+--------
+
+- Important Notes
+- Supported Features
+- Hardware Supported Hardware
+- Known Issues and Workarounds
+- Building and Installation:
+- Command Line Parameters
+
+=================================================================================
+
+Important Notes:
+----------------
+
+This is the first released version of Wangxun gigabit ethernet driver. It is fully new and still remain in
+debugging status.
+
+Supported Features:
+-------------
+- Support 10/100/1000M full and Autoneg.
+- Support Legacy/MSI/MSI-X interrupt.
+- Support ipv4/ipv6, Support promisc mode.
+- Support RSS.
+- Support Vlan.
+- Support Tx/Rx checksum offload.
+- Support TSO.
+- Support Jumbo Frames.
+- Support IEEE 1588.
+- Support Linux bond.
+- Support L2 Filter.
+
+Supported Hardware:
+-----------------------
+- for internal phy only.
+- compatible for PCIE gen2 x4.
+
+Known Issues and Workarounds:
+-----------------------------
+functions below is still debugging:
+- Wake-On-LAN
+- SR-IOV
+- Flow control
+- PXE
+
+Building and Installation:
+--------------------------
+
+to build ngbe, install kernel-header and kernel-devel packages corresponding to kernel version(command: uname -r).
+then contact to us and get driver tgz file, uncompress tgz, go to src directory.
+you can
+in x86 platform:
+compile the driver by executing "make"
+install the driver by executing "make install"
+in kylinft platform:
+compile the driver by executing "make kylinft"
+install the driver by executing "make kylinft_install"
+load driver by executing "modprobe ngbe" or "modprobe ngbe [parameter=port1_value,port2_value]"
+unload driver by executing "rmmod ngbe"
+
+Command Line Parameters:
+------------------------
+
+Use ethtool, ifconfig, or ip link * to set or get the driver information, see man of these tools.
+
+
+=================================================================================
+
+
+
+
+
