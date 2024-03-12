@@ -1,0 +1,11 @@
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -25,6 +25,8 @@ ifneq ($(KERNELRELEASE),)
+ CONFIG_NGBE=m
+ obj-$(CONFIG_NGBE) += ngbe.o
+ 
++ccflags-y += -Wno-implicit-function-declaration
++
+ define ngbe-y
+ 	ngbe_main.o
+ 	ngbe_ethtool.o

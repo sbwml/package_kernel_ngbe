@@ -1,0 +1,34 @@
+--- a/src/kcompat.h
++++ b/src/kcompat.h
+@@ -2447,6 +2447,12 @@ void *_kc_kmemdup(const void *src, size_
+ #include <linux/aer.h>
+ #include <linux/pci_hotplug.h>
+ 
++static inline int pci_enable_pcie_error_reporting(struct pci_dev __always_unused *dev)
++{
++	return 0;
++}
++#define pci_disable_pcie_error_reporting(dev) do {} while (0)
++
+ #define NEW_SKB_CSUM_HELP
+ #endif /* < 2.6.19 */
+ 
+@@ -3794,6 +3800,9 @@ static inline void skb_tx_timestamp(stru
+ 
+ #else /* < 2.6.36 */
+ 
++#define u64_stats_fetch_retry_bh(a, b) (0)
++#define u64_stats_fetch_begin_bh(a) (0)
++
+ #define msleep(x)	do { if (x > 20)				\
+ 				msleep(x);				\
+ 			     else					\
+@@ -5383,6 +5392,8 @@ char *_kc_devm_kstrdup(struct device *de
+ #define HAVE_NET_GET_RANDOM_ONCE
+ #define HAVE_PTP_1588_CLOCK_PINS
+ #define HAVE_NETDEV_PORT
++#define u64_stats_fetch_begin_irq u64_stats_fetch_begin_bh
++#define u64_stats_fetch_retry_irq u64_stats_fetch_retry_bh
+ #endif /* 3.15.0 */
+ 
+ /*****************************************************************************/
