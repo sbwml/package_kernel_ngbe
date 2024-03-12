@@ -17,7 +17,7 @@ define KernelPackage/ngbe
   TITLE:=Driver for WangXun GbE PCI Express ethernet
   SUBMENU:=Network Devices
   VERSION:=$(LINUX_VERSION)+$(PKG_VERSION)-$(BOARD)-$(PKG_RELEASE)
-  DEPENDS:=@PCI_SUPPORT
+  DEPENDS:=@PCI_SUPPORT +kmod-ptp
   FILES:= $(PKG_BUILD_DIR)/src/ngbe.ko
   AUTOLOAD:=$(call AutoProbe,ngbe)
 endef
